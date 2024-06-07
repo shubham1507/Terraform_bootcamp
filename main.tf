@@ -184,7 +184,7 @@ resource "random_id" "randomness" {
   byte_length = 8
 }
 
-resource "aws_s3_bucket" "snj_dryrun_S3_bucket" {
+/*resource "aws_s3_bucket" "snj_dryrun_S3_bucket" {
   bucket = "my-new-tf-test-bucket-${replace(random_id.randomness.hex, "/[^a-zA-Z0-9-_.]/", "")}"
 
   tags = {
@@ -200,7 +200,7 @@ resource "aws_s3_bucket_ownership_controls" "my_new_bucket_acl" {
     object_ownership = "BucketOwnerPreferred"
   }
 }
-
+*/
 #Configured an AWS security group
 resource "aws_security_group" "snj-new-security-group" {
   name        = "web_server_inbound"
@@ -421,4 +421,24 @@ module "autoscaling" {
     Name = "Web EC2 Server 2"
   }
 
+}
+#valid child module ref
+output "asg_group_size" {
+  value = module.autoscaling.autoscaling_group_max_size
+}
+/*
+#invalid child module ref
+output "asg_group_size" {
+  value = module.autoscaling.aws_autoscaling_group.this[0].max_size
+}*/
+
+#modules from terraform rpublic registry
+
+module "s3-bucket" {
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "2.11.1"
+}
+
+output "s3_bucket_name" {
+  value = module.s3-bucket.s3_bucket_bucket_domain_name
 }
