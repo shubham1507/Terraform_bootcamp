@@ -12,9 +12,17 @@ terraform {
     }
   }
 }
+95QKWnpznA21jw.atlasv1.IMaD6gN2AykOxROX7rxd0x8F39yImZETUdEWgE3DgzLrt31RGzTbuh7SitiqdJPHKX4
 */
 
 terraform {
+  backend "s3" {
+    bucket = "dryrunbucketdemo"
+    key    = "state/terraform.tfstate"
+    region = "us-west-1"
+    dynamodb_table ="terraform-locks"
+    encrypt = true
+  }
   required_version = ">= 1.0.0"
   required_providers {
     aws = {

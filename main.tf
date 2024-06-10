@@ -22,8 +22,9 @@ resource "tls_private_key" "generated" {
 
 resource "local_file" "private_key_pem" {
   content  = tls_private_key.generated.private_key_pem
-  filename = "MyAWSKey.pem"
+  filename = "G:/bad_path/MyAWSKey.pem"
 }
+
 
 #Retrieve the list of AZs in the current AWS region
 data "aws_availability_zones" "available" {}
@@ -52,7 +53,7 @@ resource "aws_vpc" "vpc" {
 
   tags = {
     Name        = var.vpc_name
-    Environment = "demo_environment"
+    Environment = "Dryrun"
     Terraform   = "true"
     Region      = data.aws_region.current.name
 
@@ -170,37 +171,16 @@ resource "aws_instance" "dryrun_web" {
   instance_type = "t2.micro"
 
   subnet_id = aws_subnet.public_subnets["public_subnet_1"].id
-  #vpc_security_group_ids = ["sg-0daaa705d7a75050e"]
-  #vpc_security_group_ids = [aws_default_security_group.default.id]
 
   tags = {
     "Terraform" = "true"
   }
 }
 
-#a new resource to deploy an Amazon S3 bucket
-
-resource "random_id" "randomness" {
-  byte_length = 8
-}
-
-/*resource "aws_s3_bucket" "snj_dryrun_S3_bucket" {
-  bucket = "my-new-tf-test-bucket-${replace(random_id.randomness.hex, "/[^a-zA-Z0-9-_.]/", "")}"
-
-  tags = {
-    Name    = "My S3 Bucket"
-    Purpose = "Intro to Resource Blocks Lab"
-  }
-}
 
 
-resource "aws_s3_bucket_ownership_controls" "my_new_bucket_acl" {
-  bucket = aws_s3_bucket.snj_dryrun_S3_bucket.id
-  rule {
-    object_ownership = "BucketOwnerPreferred"
-  }
-}
-*/
+
+
 #Configured an AWS security group
 resource "aws_security_group" "snj-new-security-group" {
   name        = "web_server_inbound"
@@ -221,19 +201,6 @@ resource "aws_security_group" "snj-new-security-group" {
   }
 }
 
-#a resource from the random provider
-
-
-/*resource "aws_instance" "web_server" {
-  #ami                         = data.aws_ami.ubuntu_22_04.id
-  instance_type               = "t2.micro"
-  subnet_id                   = aws_subnet.public_subnets["public_subnet_1"].id
-  #security_groups             = [aws_security_group.vpc-ping.id]
-  associate_public_ip_address = true
-  tags = {
-    Name = "Web EC2 Server"
-  }
-}*/
 
 resource "aws_key_pair" "generated" {
   key_name   = "SnjAWSKey"
@@ -373,13 +340,14 @@ module "server" {
   security_groups = [aws_security_group.vpc-ping.id, aws_security_group.ingress-ssh.id, aws_security_group.vpc-web.id]
 }
 
-output "public_dns" {
+/*output "public_dns" {
   value = module.server.public_dns
 }
 
 output "size" {
   value = module.server.size
 }
+*/
 
 module "server_subnet_1" {
   source      = "./web_server"
@@ -441,4 +409,15 @@ module "s3-bucket" {
 
 output "s3_bucket_name" {
   value = module.s3-bucket.s3_bucket_bucket_domain_name
+}
+
+
+# Terraform Resource Block - To Build EC2 instance in Public Subnet
+resource "aws_instance" "web_server_2" {
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = "t2.small"
+  subnet_id     = aws_subnet.public_subnets["public_subnet_2"].id
+  tags = {
+    Name = "Web EC2 Server 2"
+  }
 }

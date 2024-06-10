@@ -1,5 +1,5 @@
 
-resource "aws_instance" "web" {
+/*resource "aws_instance" "web" {
   ami                    = var.ami
   instance_type          = var.size
   subnet_id              = var.subnet_id
@@ -10,3 +10,5 @@ resource "aws_instance" "web" {
     "Environment" = "Training"
   }
 }
+
+*/
