@@ -1,0 +1,45 @@
+lock: {
+    "Created": "2024-06-11T13:10:19.787448961Z",
+    "ID": "37ef4a7f-cc4a-dd5e-30af-46a38f693dde",
+    "Info": "",
+    "Operation": "OperationTypeApply",
+    "Path": "",
+    "Version": "1.8.5",
+    "Who": "snj1@Snj"
+}
+unlock: {
+    "Created": "2024-06-11T13:10:19.787448961Z",
+    "ID": "37ef4a7f-cc4a-dd5e-30af-46a38f693dde",
+    "Info": "",
+    "Operation": "OperationTypeApply",
+    "Path": "",
+    "Version": "1.8.5",
+    "Who": "snj1@Snj"
+}
+lock: {
+    "Created": "2024-06-11T13:13:35.530702815Z",
+    "ID": "a5235f81-91fe-f846-0b61-83b04c6274de",
+    "Info": "",
+    "Operation": "OperationTypeApply",
+    "Path": "",
+    "Version": "1.8.5",
+    "Who": "snj1@Snj"
+}
+state_write: {
+    "check_results": null,
+    "lineage": "6b21d70a-6b57-5f27-8c74-a9babcedb411",
+    "outputs": {},
+    "resources": [],
+    "serial": 1,
+    "terraform_version": "1.8.5",
+    "version": 4
+}
+unlock: {
+    "Created": "2024-06-11T13:13:35.530702815Z",
+    "ID": "a5235f81-91fe-f846-0b61-83b04c6274de",
+    "Info": "",
+    "Operation": "OperationTypeApply",
+    "Path": "",
+    "Version": "1.8.5",
+    "Who": "snj1@Snj"
+}

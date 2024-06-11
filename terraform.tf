@@ -12,17 +12,35 @@ terraform {
     }
   }
 }
-95QKWnpznA21jw.atlasv1.IMaD6gN2AykOxROX7rxd0x8F39yImZETUdEWgE3DgzLrt31RGzTbuh7SitiqdJPHKX4
+
 */
 
 terraform {
-  backend "s3" {
+  /*backend "s3" {
     bucket = "dryrunbucketdemo"
     key    = "state/terraform.tfstate"
     region = "us-west-1"
     dynamodb_table ="terraform-locks"
     encrypt = true
+  }*/
+  /* backend "http" {
+    address        = "http://localhost:5000/terraform_state/my_state"
+    lock_address   = "http://localhost:5000/terraform_lock/my_state"
+    lock_method    = "PUT"
+    unlock_address = "http://localhost:5000/terraform_lock/my_state"
+    unlock_method  = "DELETE"
   }
+
+*/
+  backend "remote" {
+    hostname     = "app.terraform.io"
+    organization = "HexawareTech1507"
+
+    workspaces {
+      name = "Terraform_bootcamp"
+    }
+  }
+
   required_version = ">= 1.0.0"
   required_providers {
     aws = {
