@@ -17,11 +17,7 @@ terraform {
 
 terraform {
   /*backend "s3" {
-    bucket = "dryrunbucketdemo"
-    key    = "state/terraform.tfstate"
-    region = "us-west-1"
-    dynamodb_table ="terraform-locks"
-    encrypt = true
+
   }*/
   /* backend "http" {
     address        = "http://localhost:5000/terraform_state/my_state"
@@ -40,6 +36,9 @@ terraform {
     }
   }
 */
+  /* backend "local" {
+    path = "terraform.tfstate"
+  }*/
   required_version = ">= 1.0.0"
   required_providers {
     aws = {
