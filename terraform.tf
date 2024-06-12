@@ -32,15 +32,14 @@ terraform {
   }
 
 */
-  backend "remote" {
+  /*backend "remote" {
     hostname     = "app.terraform.io"
     organization = "HexawareTech1507"
-
     workspaces {
       name = "Terraform_bootcamp"
     }
   }
-
+*/
   required_version = ">= 1.0.0"
   required_providers {
     aws = {
