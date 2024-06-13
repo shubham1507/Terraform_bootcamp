@@ -16,6 +16,8 @@ locals {
   server_name = "ec2-${var.environment}-api-${var.variables_sub_az}"
 }
 
+
+
 resource "tls_private_key" "generated" {
   algorithm = "RSA"
 }
@@ -411,13 +413,41 @@ output "s3_bucket_name" {
   value = module.s3-bucket.s3_bucket_bucket_domain_name
 }
 
+locals {
+  # Common tags to be assigned to all resources
+  common_tags = {
+    Name  = local.server_name
+    Owner = local.team
+    App   = local.application
+    #Service   = local.service_name
+    #AppTeam   = local.app_team
+    #CreatedBy = local.createdby
+  }
+}
 
 # Terraform Resource Block - To Build EC2 instance in Public Subnet
 resource "aws_instance" "web_server_2" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.small"
   subnet_id     = aws_subnet.public_subnets["public_subnet_2"].id
-  tags = {
-    Name = "Web EC2 Server 2"
-  }
+  tags          = local.common_tags
 }
+
+#Suppress sensitive information
+/*variable "phone_number" {
+  type = string
+  sensitive = true
+  default = "867-5309"
+}
+
+locals {
+  contact_info = {
+      cloud = var.cloud
+      department = var.no_caps
+      cost_code = var.character_limit
+      phone_number = var.phone_number
+  }
+
+  my_number = nonsensitive(var.phone_number)
+}
+*/

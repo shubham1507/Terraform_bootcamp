@@ -1,26 +1,26 @@
 variable "first_name" {
-  type = string
+  type      = string
   sensitive = true
-  default = "Terraform"
+  default   = "Terraform"
 }
 
 variable "last_name" {
-  type = string
+  type      = string
   sensitive = true
-  default = "Tom"
+  default   = "Tom"
 }
 
 variable "phone_number" {
-  type = string
+  type      = string
   sensitive = true
-  default = "867-5309"
+  default   = "867-5309"
 }
 
 locals {
   contact_info = {
-      first_name = var.first_name
-      last_name = var.last_name
-      phone_number = var.phone_number
+    first_name   = var.first_name
+    last_name    = var.last_name
+    phone_number = var.phone_number
   }
 
   my_number = nonsensitive(var.phone_number)
