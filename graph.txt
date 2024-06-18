@@ -1,0 +1,110 @@
+digraph G {
+  rankdir = "RL";
+  node [shape = rect, fontname = "sans-serif"];
+  "data.aws_ami.ubuntu" [label="data.aws_ami.ubuntu"];
+  "data.aws_availability_zones.available" [label="data.aws_availability_zones.available"];
+  "data.aws_region.current" [label="data.aws_region.current"];
+  "aws_default_vpc.default" [label="aws_default_vpc.default"];
+  "aws_eip.nat_gateway_eip" [label="aws_eip.nat_gateway_eip"];
+  "aws_instance.dryrun_web" [label="aws_instance.dryrun_web"];
+  "aws_instance.ubuntu_server" [label="aws_instance.ubuntu_server"];
+  "aws_instance.web_server_2" [label="aws_instance.web_server_2"];
+  "aws_internet_gateway.internet_gateway" [label="aws_internet_gateway.internet_gateway"];
+  "aws_key_pair.generated" [label="aws_key_pair.generated"];
+  "aws_nat_gateway.nat_gateway" [label="aws_nat_gateway.nat_gateway"];
+  "aws_route_table.private_route_table" [label="aws_route_table.private_route_table"];
+  "aws_route_table.public_route_table" [label="aws_route_table.public_route_table"];
+  "aws_route_table_association.private" [label="aws_route_table_association.private"];
+  "aws_route_table_association.public" [label="aws_route_table_association.public"];
+  "aws_security_group.ingress-ssh" [label="aws_security_group.ingress-ssh"];
+  "aws_security_group.main" [label="aws_security_group.main"];
+  "aws_security_group.snj-new-security-group" [label="aws_security_group.snj-new-security-group"];
+  "aws_security_group.vpc-ping" [label="aws_security_group.vpc-ping"];
+  "aws_security_group.vpc-web" [label="aws_security_group.vpc-web"];
+  "aws_subnet.list_subnet" [label="aws_subnet.list_subnet"];
+  "aws_subnet.private_subnets" [label="aws_subnet.private_subnets"];
+  "aws_subnet.public_subnets" [label="aws_subnet.public_subnets"];
+  "aws_vpc.vpc" [label="aws_vpc.vpc"];
+  "local_file.private_key_pem" [label="local_file.private_key_pem"];
+  "tls_private_key.generated" [label="tls_private_key.generated"];
+  subgraph "cluster_module.autoscaling" {
+    label = "module.autoscaling"
+    fontname = "sans-serif"
+    "module.autoscaling.data.aws_default_tags.current" [label="data.aws_default_tags.current"];
+    "module.autoscaling.aws_autoscaling_group.this" [label="aws_autoscaling_group.this"];
+    "module.autoscaling.aws_autoscaling_schedule.this" [label="aws_autoscaling_schedule.this"];
+    "module.autoscaling.aws_launch_configuration.this" [label="aws_launch_configuration.this"];
+    "module.autoscaling.aws_launch_template.this" [label="aws_launch_template.this"];
+  }
+  subgraph "cluster_module.s3-bucket" {
+    label = "module.s3-bucket"
+    fontname = "sans-serif"
+    "module.s3-bucket.data.aws_elb_service_account.this" [label="data.aws_elb_service_account.this"];
+    "module.s3-bucket.data.aws_iam_policy_document.combined" [label="data.aws_iam_policy_document.combined"];
+    "module.s3-bucket.data.aws_iam_policy_document.deny_insecure_transport" [label="data.aws_iam_policy_document.deny_insecure_transport"];
+    "module.s3-bucket.data.aws_iam_policy_document.elb_log_delivery" [label="data.aws_iam_policy_document.elb_log_delivery"];
+    "module.s3-bucket.data.aws_iam_policy_document.lb_log_delivery" [label="data.aws_iam_policy_document.lb_log_delivery"];
+    "module.s3-bucket.aws_s3_bucket.this" [label="aws_s3_bucket.this"];
+    "module.s3-bucket.aws_s3_bucket_ownership_controls.this" [label="aws_s3_bucket_ownership_controls.this"];
+    "module.s3-bucket.aws_s3_bucket_policy.this" [label="aws_s3_bucket_policy.this"];
+    "module.s3-bucket.aws_s3_bucket_public_access_block.this" [label="aws_s3_bucket_public_access_block.this"];
+  }
+  subgraph "cluster_module.server_subnet_1" {
+    label = "module.server_subnet_1"
+    fontname = "sans-serif"
+    "module.server_subnet_1.aws_instance.web" [label="aws_instance.web"];
+  }
+  "aws_eip.nat_gateway_eip" -> "aws_internet_gateway.internet_gateway";
+  "aws_instance.dryrun_web" -> "data.aws_ami.ubuntu";
+  "aws_instance.dryrun_web" -> "aws_subnet.public_subnets";
+  "aws_instance.ubuntu_server" -> "data.aws_ami.ubuntu";
+  "aws_instance.ubuntu_server" -> "aws_key_pair.generated";
+  "aws_instance.ubuntu_server" -> "aws_security_group.ingress-ssh";
+  "aws_instance.ubuntu_server" -> "aws_security_group.vpc-ping";
+  "aws_instance.ubuntu_server" -> "aws_security_group.vpc-web";
+  "aws_instance.ubuntu_server" -> "aws_subnet.public_subnets";
+  "aws_instance.ubuntu_server" -> "local_file.private_key_pem";
+  "aws_instance.web_server_2" -> "data.aws_ami.ubuntu";
+  "aws_instance.web_server_2" -> "aws_subnet.public_subnets";
+  "aws_internet_gateway.internet_gateway" -> "aws_vpc.vpc";
+  "aws_key_pair.generated" -> "tls_private_key.generated";
+  "aws_nat_gateway.nat_gateway" -> "aws_eip.nat_gateway_eip";
+  "aws_nat_gateway.nat_gateway" -> "aws_subnet.public_subnets";
+  "aws_route_table.private_route_table" -> "aws_nat_gateway.nat_gateway";
+  "aws_route_table.public_route_table" -> "aws_internet_gateway.internet_gateway";
+  "aws_route_table_association.private" -> "aws_route_table.private_route_table";
+  "aws_route_table_association.private" -> "aws_subnet.private_subnets";
+  "aws_route_table_association.public" -> "aws_route_table.public_route_table";
+  "aws_route_table_association.public" -> "aws_subnet.public_subnets";
+  "aws_security_group.ingress-ssh" -> "aws_vpc.vpc";
+  "aws_security_group.main" -> "aws_vpc.vpc";
+  "aws_security_group.snj-new-security-group" -> "aws_vpc.vpc";
+  "aws_security_group.vpc-ping" -> "aws_vpc.vpc";
+  "aws_security_group.vpc-web" -> "aws_vpc.vpc";
+  "aws_subnet.list_subnet" -> "aws_vpc.vpc";
+  "aws_subnet.private_subnets" -> "aws_vpc.vpc";
+  "aws_subnet.public_subnets" -> "aws_vpc.vpc";
+  "local_file.private_key_pem" -> "tls_private_key.generated";
+  "module.autoscaling.aws_autoscaling_group.this" -> "aws_subnet.private_subnets";
+  "module.autoscaling.aws_autoscaling_group.this" -> "module.autoscaling.aws_launch_configuration.this";
+  "module.autoscaling.aws_autoscaling_group.this" -> "module.autoscaling.aws_launch_template.this";
+  "module.autoscaling.aws_autoscaling_schedule.this" -> "module.autoscaling.aws_autoscaling_group.this";
+  "module.autoscaling.aws_launch_configuration.this" -> "data.aws_ami.ubuntu";
+  "module.autoscaling.aws_launch_template.this" -> "data.aws_ami.ubuntu";
+  "module.s3-bucket.data.aws_iam_policy_document.combined" -> "module.s3-bucket.data.aws_iam_policy_document.deny_insecure_transport";
+  "module.s3-bucket.data.aws_iam_policy_document.combined" -> "module.s3-bucket.data.aws_iam_policy_document.elb_log_delivery";
+  "module.s3-bucket.data.aws_iam_policy_document.combined" -> "module.s3-bucket.data.aws_iam_policy_document.lb_log_delivery";
+  "module.s3-bucket.data.aws_iam_policy_document.deny_insecure_transport" -> "module.s3-bucket.aws_s3_bucket.this";
+  "module.s3-bucket.data.aws_iam_policy_document.elb_log_delivery" -> "module.s3-bucket.data.aws_elb_service_account.this";
+  "module.s3-bucket.data.aws_iam_policy_document.elb_log_delivery" -> "module.s3-bucket.aws_s3_bucket.this";
+  "module.s3-bucket.data.aws_iam_policy_document.lb_log_delivery" -> "module.s3-bucket.aws_s3_bucket.this";
+  "module.s3-bucket.aws_s3_bucket_ownership_controls.this" -> "module.s3-bucket.aws_s3_bucket_public_access_block.this";
+  "module.s3-bucket.aws_s3_bucket_policy.this" -> "module.s3-bucket.data.aws_iam_policy_document.combined";
+  "module.s3-bucket.aws_s3_bucket_public_access_block.this" -> "module.s3-bucket.aws_s3_bucket_policy.this";
+  "module.server_subnet_1.aws_instance.web" -> "data.aws_ami.ubuntu";
+  "module.server_subnet_1.aws_instance.web" -> "aws_key_pair.generated";
+  "module.server_subnet_1.aws_instance.web" -> "aws_security_group.ingress-ssh";
+  "module.server_subnet_1.aws_instance.web" -> "aws_security_group.vpc-ping";
+  "module.server_subnet_1.aws_instance.web" -> "aws_security_group.vpc-web";
+  "module.server_subnet_1.aws_instance.web" -> "aws_subnet.public_subnets";
+}

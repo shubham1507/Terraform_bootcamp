@@ -49,18 +49,19 @@ data "aws_ami" "ubuntu" {
 }
 
 
+
 #Define the VPC
-resource "aws_vpc" "vpc" {
+/*resource "aws_vpc" "vpc" {
   cidr_block = var.vpc_cidr
 
   tags = {
-    Name        = var.vpc_name
-    Environment = "Dryrun"
-    Terraform   = "true"
-    Region      = data.aws_region.current.name
-
+    Name        = upper(var.vpc_name)
+    Environment = upper(var.environment)
+    Terraform   = upper("true")
   }
-}
+
+  enable_dns_hostnames = true
+}*/
 
 
 #Deploy the private subnets
@@ -204,14 +205,14 @@ resource "aws_security_group" "snj-new-security-group" {
 }
 
 
-resource "aws_key_pair" "generated" {
+/*resource "aws_key_pair" "generated" {
   key_name   = "SnjAWSKey"
   public_key = tls_private_key.generated.public_key_openssh
 
   lifecycle {
     ignore_changes = [key_name]
   }
-}
+}*/
 
 # Security Groups
 
@@ -360,7 +361,7 @@ module "server_subnet_1" {
   subnet_id   = aws_subnet.public_subnets["public_subnet_1"].id
   security_groups = [aws_security_group.vpc-ping.id,
     aws_security_group.ingress-ssh.id,
-  aws_security_group.vpc-web.id]
+  aws_security_group.vpc-web.id, aws_security_group.main.id]
 }
 
 
@@ -435,19 +436,138 @@ resource "aws_instance" "web_server_2" {
 
 #Suppress sensitive information
 /*variable "phone_number" {
-  type = string
+  type      = string
   sensitive = true
-  default = "867-5309"
+  default   = "867-5309"
 }
 
 locals {
   contact_info = {
-      cloud = var.cloud
-      department = var.no_caps
-      cost_code = var.character_limit
-      phone_number = var.phone_number
+    cloud        = var.cloud
+    department   = var.no_caps
+    cost_code    = var.character_limit
+    phone_number = var.phone_number
   }
 
   my_number = nonsensitive(var.phone_number)
 }
+
 */
+
+
+
+/*resource "aws_subnet" "list_subnet" {
+  for_each          = var.ip
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = var.ip[var.environment]
+  availability_zone = var.us-west-1-azs[0]
+}
+*/
+variable "subnet_indices" {
+  type = map(number)
+  default = {
+    dev  = 0
+    prod = 1
+    # Add more subnet indices as needed
+  }
+}
+
+/*resource "aws_subnet" "list_subnet" {
+  for_each          = var.subnet_indices
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = cidrsubnet(var.ip[var.environment], 4, var.subnet_indices[each.key])
+  availability_zone = each.key == "dev" ? "us-west-1a" : "us-west-1b"
+}
+*/
+/*ata "aws_s3_bucket" "dryrunbucketdemo" {
+  bucket = "my-data-lookup-bucket-btk"
+}
+
+resource "aws_iam_policy" "policy" {
+  name        = "data_bucket_policy"
+  description = "Deny access to my bucket"
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:Get*",
+                "s3:List*"
+            ],
+            "Resource": "${data.aws_s3_bucket.dryrunbucketdemo.arn}"
+        }
+    ]
+  })
+}*/
+
+
+
+
+locals {
+  maximum = max(var.num_1, var.num_2, var.num_3)
+  minimum = min(var.num_1, var.num_2, var.num_3, 44, 20)
+}
+
+output "max_value" {
+  value = local.maximum
+}
+
+output "min_value" {
+  value = local.minimum
+}
+
+#Create a Security Group Resource with Terraform
+
+locals {
+  ingress_rules = [{
+    port        = 443
+    description = "Port 443"
+    },
+    {
+      port        = 80
+      description = "Port 80"
+    }
+  ]
+}
+
+resource "aws_security_group" "main" {
+  name = "core-sg-global"
+
+  vpc_id = aws_vpc.vpc.id
+
+  dynamic "ingress" {
+    for_each = var.web_ingress
+    content {
+      description = ingress.value.description
+      from_port   = ingress.value.port
+      to_port     = ingress.value.port
+      protocol    = ingress.value.protocol
+      cidr_blocks = ingress.value.cidr_blocks
+    }
+  }
+
+  lifecycle {
+    create_before_destroy = true
+    #prevent_destroy       = true
+  }
+
+}
+
+resource "aws_vpc" "vpc" {
+  cidr_block = var.vpc_cidr
+
+  tags = {
+    Name        = var.vpc_name
+    Environment = var.environment
+    Terraform   = "true"
+  }
+
+  enable_dns_hostnames = true
+}
+
+
+resource "aws_key_pair" "generated" {
+  key_name   = "MyAWSKey${var.environment}"
+  public_key = tls_private_key.generated.public_key_openssh
+}

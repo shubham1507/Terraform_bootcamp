@@ -62,3 +62,13 @@ terraform {
     }
   }
 }
+
+terraform {
+  cloud {
+    organization = "example-org-2e0200"
+
+    workspaces {
+      name = "devops-aws-myapp-dev"
+    }
+  }
+}
